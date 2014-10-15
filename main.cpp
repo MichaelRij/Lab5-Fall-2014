@@ -1,128 +1,115 @@
-#include <cstdio>
-#include <cctype>	
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include <iostream>
+#include <string>
 
 using namespace std;
+using std::string;
+
+#define MAX 100
+
+typedef int BOOL;
+typedef string WORD;
+typedef WORD DICT[MAX];
 
 /*
 Author : Michael Rijlaarsdam
-Lab #4 Assignment #1 Dictionary
+Lab #5 Assignment #2 Dictionary2
 Purpose : This program creates a list of all the words typed in or in a given text file. cmd ./prog < "text file"
 Can only handle a-z and A-Z, ignores everything other than letters space, and linebreak;
 forces all letters to lowercase; 
 uses space and linebreak to determine a new word;
 does not spellcheck;
-Words greater than the allowed length are broken up and treated as seperate shorter words
+
+Differences from Dictionary(1)
+Functions will be in a seperate linked file
+Dictionary will be sorted before being printed
+Will hold words of any length
 */
 
-int strLength(int);
-int strLengthP(int);
-int strLength(void);
-void printDict(void);
-bool unique(void);
-void fillDict(void);
+int LocateWord(DICT, WORD);
+BOOL FullDictionary(DICT);
+BOOL InsertWord(DICT,WORD);
+WORD GetNextWord(void);
+void DumpDictionary(DICT ,int[]);
 
-#define  NUMWORDS 100//		Determines how many words can be entered into the list
-#define WORDSIZE 22//		Determines how many letters can be in each word 
-int word=0;
-char dict [NUMWORDS][WORDSIZE]={0};
-int dicFreq[NUMWORDS]={0};
-bool listFlag = false;
+/*
+  note that these are global variables so that they are already initialized to 0
+*/
 
-int main() {
-	fillDict();
-	printDict();
-	return 0;
-	
-}
-	
-int strLength(int str){ //	with parameter without length error message
-	int i=0;
-	while(dict[str][i]!=0){
-		i++;
-		if(i==WORDSIZE)break;
-	}
-return i;}
+DICT dictionary;  //your dictionary 
+WORD word;        // 
+int count[MAX];   //tracks word frequencies
 
-int strLengthP(int str){ //	with parameter with length error message only gets run by printDict
-	int i=0;
-	while(dict[str][i]!=0){
-		 i++;
-		if(i==WORDSIZE){
-			cout << "*";
-			break;
-		}
-	}
-return i;}
 
-int strLength(){ // 	no parameter should only runs on dict[word]
-	int i=0;
-	while(dict[word][i]!=0){
-		i++;
-		if(i==WORDSIZE)break;
-	}
-return i;}
-
-void printDict(){ //	Print out the dictionary
-	int length = 0,tab=0;
-	cout<<"\nNOTE: * means this word has been shortened because it was beyond the allowed length.\n\n";
-	cout<<"Word		Frequency\n";
-	cout<<"--------------------------\n";
-	for(int i=0; i < word; i++){
-		length = strLengthP(i);
-		for(int j=0; j < length; j++) 
-			cout.put(dict[i][j]);
-		tab=(WORDSIZE-length)/8;// 		lines up the frequencies
-		if(length%8==7)tab++;// 		handles a special case
-		while(tab-->=0)cout << "	";
-		cout << dicFreq[i]<<"\n";
-	}
-	if(listFlag) cout<<"\nThe list is full so you cant add any more words. Sorry.\n";
+BOOL InsertWord(DICT dict, WORD word)
+{
+/* 
+  adds word to dictionary , if word can't be added returns 0 else returns 1
+/*
 }
 
-bool unique(){//	checks if string is unique; handles empty string; updates dicFreq; moves word along
-	bool same = false;
-	int length = strLength();
-	if(length==0)return false; //			skip if empty string
-	for(int i=0;i<word;i++){//			go through the list of previous words 
-		if(length==strLength(i)){
-			same = true;
-			for(int j=0; j < length; j++){  // start checking each letter
-				if(dict[i][j]!=dict[word][j]) {
-					same = false;
-					break;
-				}
-			}
-			if(same){//			the word is alredy in dict
-				dicFreq[i]+=1;
-				for(int j=0; j < length; j++)// clear dict[word]
-					dict[word][j]=0;
-				return false;
-			}
-		}	
-	}
-	dicFreq[word]=1;//	updates dicFreq; moves word along
-	word++;
-	return true;
+void DumpDictionary(DICT dict, int count[]) {
+/* 
+  will sort the dictionary, and display the contents
+*/
 }
 
-void fillDict(){//	fills the dictionary
-	int i = 0;
-	char ch;
-	while( cin.good() ){
-		ch = cin.get();
-		if ( isalpha(ch) ) { // 		function test if ch  is A-Z, a-z 
-			if(ch>64 && ch<=90)ch+=32;//	convert A-Z to a-z
-			dict[word][i++]=ch;
-		}
-		else if (ch==' '||ch=='\n'){//		indicates new word
-			unique();
-			if(word==NUMWORDS){//		prevents the user from exceeding NUMWORDS
-				listFlag = true;
-				break;
-			}
-			i=0;
-		}
-	}
+WORD GetNextWord(void){
+/* 
+   will retrieve next word in input stream. Word is defined just as in assignment #1 
+   returns WORD or 0 if no more words in input stream
+*/
+    int length = getNextWordLength();
+    if (length==0)return 0;//		checks for empty string
+
+    char ch;
+    for (int i = 0; i < length; i++){
+	cin.get();
+	if(ch>64 && ch<=90)ch+=32;//	convert A-Z to a-z
+    }
+
 }
 
+int getNextWordLength(){// <-- self documents
+    int i = 0;
+    char ch;
+    while( cin.good() ){
+	ch = cin.get();
+	if (ch==' '||ch=='\n'){//		indicates new word
+	    return i;
+	}
+	i++;
+    }
+    return 0;// 	Can be evaluated as false
+}
+
+BOOL FullDictionary(DICT dict) {
+/* 
+   if dictionary is full, return 1 else 0 
+ */
+}
+
+int LocateWord(DICT dict, WORD word) {
+/*
+   will determine if dictionary contains word. if found, returns position else returns value < 0
+*/
+}
+
+int main (void) {
+    int pos;
+
+    while (1) {
+       word = GetNextWord();
+       if ( 0 == word )  {
+           DumpDictionary(dictionary,count);
+           break;
+       }
+       if ((pos == LocateWord(dictionary,word)) >=  0 ) 
+           count[pos]++;
+       else
+           if (!InsertWord(dictionary,word)) cout << "dictionary full " << word << " cannot be added\n";
+    }
+    return 0;
+}
