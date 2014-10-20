@@ -3,6 +3,7 @@
 #include <string.h>
 #include <iostream>
 #include <string>
+#include <algorithm>
 
 using namespace std;
 using std::string;
@@ -19,7 +20,7 @@ Lab #5 Assignment #2 Dictionary2
 Purpose : This program creates a list of all the words typed in or in a given text file. cmd ./prog < "text file"
 Can only handle a-z and A-Z, ignores everything other than letters space, and linebreak;
 forces all letters to lowercase; 
-uses space and linebreak to determine a new word;
+uses non-alphabetic characters to determine a new word; exception for '
 does not spellcheck;
 
 Differences from Dictionary(1)
@@ -40,61 +41,92 @@ void DumpDictionary(DICT ,int[]);
 
 DICT dictionary;  //your dictionary 
 WORD word;        // 
-int count[MAX];   //tracks word frequencies
-
-
-BOOL InsertWord(DICT dict, WORD word)
-{
-/* 
-  adds word to dictionary , if word can't be added returns 0 else returns 1
-/*
-}
+int myCount[MAX];   //tracks word frequencies
+int tracker = 0;
 
 void DumpDictionary(DICT dict, int count[]) {
 /* 
   will sort the dictionary, and display the contents
 */
+    sort(dict,dict+tracker);
+    int tab = 0; 
+    cout<<"Word		Frequency\n";
+    cout<<"--------------------------\n";
+
+    for(int i=0; i < tracker; i++){
+
+	if(dict[i] == "")break;
+
+	cout << dict[i];
+
+	tab=((23-dict[i].length())/8);// 		lines up the counts
+//	if(dict[i].length()%8==7)tab++;// 	handles a special case
+	while(tab-->=0)cout << "	";
+	cout << myCount[i]<<endl;
+    }
 }
+
+BOOL InsertWord(DICT dict, WORD word)
+{
+/* 
+  adds word to dictionary , if word can't be added returns 0 else returns 1
+*/
+
+    int pos = LocateWord(dict, word);
+
+    if(!FullDictionary(dict)) return 0;
+    if(pos<0) pos = tracker++;
+    
+    dict[pos] = word;
+    myCount[pos] = 1;
+    return 1;
+}
+
+
 
 WORD GetNextWord(void){
 /* 
    will retrieve next word in input stream. Word is defined just as in assignment #1 
    returns WORD or 0 if no more words in input stream
 */
-    int length = getNextWordLength();
-    if (length==0)return 0;//		checks for empty string
+    WORD myString;
+    BOOL empty = 1;
 
-    char ch;
-    for (int i = 0; i < length; i++){
-	cin.get();
-	if(ch>64 && ch<=90)ch+=32;//	convert A-Z to a-z
-    }
-
-}
-
-int getNextWordLength(){// <-- self documents
-    int i = 0;
     char ch;
     while( cin.good() ){
 	ch = cin.get();
-	if (ch==' '||ch=='\n'){//		indicates new word
-	    return i;
-	}
-	i++;
+	
+	if(isalpha(ch)){  
+	    if(ch>64 && ch<=90)ch+=32;//	convert A-Z to a-z
+	    myString.push_back(ch);
+	    empty = 0;
+	}else if (ch == 39)continue;
+	else if(!empty) return myString;
+
     }
-    return 0;// 	Can be evaluated as false
+    
+    return "";
+
 }
 
 BOOL FullDictionary(DICT dict) {
-/* 
-   if dictionary is full, return 1 else 0 
- */
+
+   //if dictionary is full, return 1 else 0 
+
+if(tracker>=100)return 0;
+return 1;
 }
 
 int LocateWord(DICT dict, WORD word) {
 /*
    will determine if dictionary contains word. if found, returns position else returns value < 0
 */
+
+    for(int i=0;i<tracker;i++){
+	if(dict[i]=="")break;
+	if(dict[i]==word)return i;
+    }
+    return -1;
 }
 
 int main (void) {
@@ -102,14 +134,17 @@ int main (void) {
 
     while (1) {
        word = GetNextWord();
-       if ( 0 == word )  {
-           DumpDictionary(dictionary,count);
+       if ( "" == word )  {
+           DumpDictionary(dictionary,myCount);
            break;
        }
-       if ((pos == LocateWord(dictionary,word)) >=  0 ) 
-           count[pos]++;
-       else
+	pos = LocateWord(dictionary,word);
+       if (pos >=  0 ) 
+           myCount[pos]++;
+       else{
            if (!InsertWord(dictionary,word)) cout << "dictionary full " << word << " cannot be added\n";
+	}
     }
+cout << dictionary[0]<<" was stored in the array"<< endl;
     return 0;
 }
