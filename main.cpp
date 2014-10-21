@@ -66,6 +66,9 @@ void DumpDictionary(DICT dict, int count[]) {
     }
 }
 
+
+
+
 BOOL InsertWord(DICT dict, WORD word)
 {
 /* 
