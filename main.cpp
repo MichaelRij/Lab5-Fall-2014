@@ -3,7 +3,6 @@
 #include <string.h>
 #include <iostream>
 #include <string>
-#include <algorithm>
 
 using namespace std;
 using std::string;
@@ -30,11 +29,12 @@ Will hold words of any length
 */
 
 //Prototypes
+void sortDictionary(DICT,int[], int);
+void DumpDictionary(DICT ,int[]);
 int LocateWord(DICT, WORD);
 BOOL FullDictionary(DICT);
 BOOL InsertWord(DICT,WORD);
 WORD GetNextWord(void);
-void DumpDictionary(DICT ,int[]);
 
 /*
   note that these are global variables so that they are already initialized to 0
@@ -45,11 +45,44 @@ WORD word;        //
 int myCount[MAX];   //tracks word frequencies
 int tracker = 0; // tracks the first available slot
 
+
+void sortDictionary(DICT dict, int count[], int length) {
+//uses quicksort; does the same operations to the count array as the dict
+
+    int i=0,j=length, p = j/2, res, tint;//left ptr, right ptr, pivot ptr, result, temp int
+    WORD pVal = dict[j/2],tmp;
+    while (i<=j){
+	res = dict[i].compare(pVal);
+	if(res<0)i++;
+	else {
+	    res = dict[j].compare(pVal);
+	    if(res>0)j--;
+	    else {
+		tmp = dict[j];
+		dict[j] = dict[i];
+		dict[i] = tmp;
+
+		tint = count[j];
+		count[j] = count[i];
+		count[i] = tint;
+
+		i++;
+		j--;
+	    }
+	}
+    }
+
+    sortDictionary(dict, count, p);
+    
+    sortDictionary((dict)+p, (count)+p, length-p);
+}
+
 void DumpDictionary(DICT dict, int count[]) {
 /* 
   will sort the dictionary, and display the contents
-*/
-    sort(dict,dict+tracker);//comes from <algorithm>// 		DOESNT MOVE COUNT VALUES
+*/    
+    sortDictionary(dict, count, MAX);
+
     int tab = 0; 
     cout<<"Word		Frequency\n";
     cout<<"--------------------------\n";
