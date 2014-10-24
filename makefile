@@ -1,5 +1,5 @@
 CC = g++
-OBJ = main.o #dictionary.o
+OBJ = main.o dictionary.o
 
 prog: $(OBJ)
 	$(CC) $(OBJ) -o $@
