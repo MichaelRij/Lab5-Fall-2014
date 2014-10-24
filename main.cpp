@@ -29,7 +29,7 @@ Will hold words of any length
 */
 
 //Prototypes
-void sortDictionary(DICT,int[], int);
+void sortDictionary(int, int);
 void DumpDictionary(DICT ,int[]);
 int LocateWord(DICT, WORD);
 BOOL FullDictionary(DICT);
@@ -45,43 +45,86 @@ WORD word;        //
 int myCount[MAX];   //tracks word frequencies
 int tracker = 0; // tracks the first available slot
 
+int rec = 0;
 
-void sortDictionary(DICT dict, int count[], int length) {
+void sortDictionary(int start, int length) {
 //uses quicksort; does the same operations to the count array as the dict
 
-    int i=0,j=length, p = j/2, res, tint;//left ptr, right ptr, pivot ptr, result, temp int
-    WORD pVal = dict[j/2],tmp;
-    while (i<=j){
-	res = dict[i].compare(pVal);
-	if(res<0)i++;
-	else {
-	    res = dict[j].compare(pVal);
-	    if(res>0)j--;
+cout << rec++ << endl;
+
+    BOOL done = 0;
+    int i=start,j=start + length-1, p = (length-1)/2+start, res, tint;//left, right, pivot, result, temp int
+    WORD pVal = dictionary[p],tmp;
+
+    while(!done){
+if(rec < 13){// 
+ cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
+ cout << "i= "<< start <<"  j= "<<start + length-1<<"  length = "<<length << endl;
+ for(int ii = start; ii<start+length; ii++)
+  cout<<ii<<" = "<<dictionary[ii]<<endl;
+}
+
+	i=start;
+	j=start + length-1;
+	p = (length-1)/2+start;
+	pVal = dictionary[p];
+
+	done = 1;
+	while (i<j){
+	    res = dictionary[i].compare(pVal);
+	    if(res<0)i++;
 	    else {
-		tmp = dict[j];
-		dict[j] = dict[i];
-		dict[i] = tmp;
+		res = dictionary[j].compare(pVal);
+		if(res>0)j--;
+		else {//swap
+		    tmp = dictionary[j];// swap strings
+		    dictionary[j] = dictionary[i];
+		    dictionary[i] = tmp;
 
-		tint = count[j];
-		count[j] = count[i];
-		count[i] = tint;
+cout << "Swapping " << dictionary[i]<< " with " <<dictionary[j]<<endl;
 
-		i++;
-		j--;
+		    tint = myCount[j];// swap associated counts
+		    myCount[j] = myCount[i];
+		    myCount[i] = tint;
+
+		    i++;
+		    j--;
+
+		    done = 0;
+		}
 	    }
 	}
+if(rec < 13){// 
+ cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
+ cout << "i= "<< start <<"  j= "<<start + length-1<<"  length = "<<length << endl;
+ for(int ii = start; ii<start+length; ii++)
+  cout<<ii<<" = "<<dictionary[ii]<<endl;
+}
     }
 
-    sortDictionary(dict, count, p);
+/*if(length == 12){
+ for(int ii = start; ii<start+length; ii++)
+  cout<<ii<<" = "<<dictionary[ii]<<endl;
+ cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
+}*/
     
-    sortDictionary((dict)+p, (count)+p, length-p);
+    if(p-start+1 >1){
+cout<<"send left sublist"<<start<<" "<< p-start+1<<endl;
+	sortDictionary(start, p-start+1);
+    }
+
+    if((length+1)/2 >1){
+cout<<"send right sublist"<<p<<" "<< (length+1)/2<<endl;
+	sortDictionary(p+1, length/2);
+    }
+    
 }
 
 void DumpDictionary(DICT dict, int count[]) {
 /* 
   will sort the dictionary, and display the contents
 */    
-    sortDictionary(dict, count, MAX);
+    sortDictionary(0, tracker);
 
     int tab = 0; 
     cout<<"Word		Frequency\n";
