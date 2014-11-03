@@ -1,40 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <iostream>
-#include <string>
-
-using namespace std;
-using std::string;
-
-#define MAX 100
-
-typedef int BOOL;
-typedef string WORD;
-typedef WORD DICT[MAX];
-
-/*
-Author : Michael Rijlaarsdam
-Lab #5 Assignment #2 Dictionary2
-Purpose : This program creates a list of all the words typed in or in a given text file. cmd ./prog < "text file"
-Can only handle a-z and A-Z;
-forces all letters to lowercase; 
-uses non-alphabetic characters to determine a new word; exception for '
-does not spellcheck;
-
-Differences from Dictionary(1)
-Functions will be in a seperate linked file
-Dictionary will be sorted before being printed
-Will hold words of any length
-*/
-
-//Prototypes
-void sortDictionary(int, int);
-void DumpDictionary(DICT ,int[]);
-int LocateWord(DICT, WORD);
-BOOL FullDictionary(DICT);
-BOOL InsertWord(DICT,WORD);
-WORD GetNextWord(void);
+#include "dictionary.h"
 
 /*
   note that these are global variables so that they are already initialized to 0
@@ -45,24 +9,14 @@ WORD word;        //
 int myCount[MAX];   //tracks word frequencies
 int tracker = 0; // tracks the first available slot
 
-int rec = 0;
-
 void sortDictionary(int start, int length) {
 //uses quicksort; does the same operations to the count array as the dict
-
-cout << rec++ << endl;
 
     BOOL done = 0;
     int i=start,j=start + length-1, p = (length-1)/2+start, res, tint;//left, right, pivot, result, temp int
     WORD pVal = dictionary[p],tmp;
 
     while(!done){
-if(rec < 13){// 
- cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
- cout << "i= "<< start <<"  j= "<<start + length-1<<"  length = "<<length << endl;
- for(int ii = start; ii<start+length; ii++)
-  cout<<ii<<" = "<<dictionary[ii]<<endl;
-}
 
 	i=start;
 	j=start + length-1;
@@ -81,8 +35,6 @@ if(rec < 13){//
 		    dictionary[j] = dictionary[i];
 		    dictionary[i] = tmp;
 
-cout << "Swapping " << dictionary[i]<< " with " <<dictionary[j]<<endl;
-
 		    tint = myCount[j];// swap associated counts
 		    myCount[j] = myCount[i];
 		    myCount[i] = tint;
@@ -94,30 +46,13 @@ cout << "Swapping " << dictionary[i]<< " with " <<dictionary[j]<<endl;
 		}
 	    }
 	}
-if(rec < 13){// 
- cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
- cout << "i= "<< start <<"  j= "<<start + length-1<<"  length = "<<length << endl;
- for(int ii = start; ii<start+length; ii++)
-  cout<<ii<<" = "<<dictionary[ii]<<endl;
-}
     }
 
-/*if(length == 12){
- for(int ii = start; ii<start+length; ii++)
-  cout<<ii<<" = "<<dictionary[ii]<<endl;
- cout<<"pVal "<<p<<" = "<<pVal<<p<<"<--------------"<<endl;
-}*/
-    
-    if(p-start+1 >1){
-cout<<"send left sublist"<<start<<" "<< p-start+1<<endl;
+    if(p-start+1 >1)
 	sortDictionary(start, p-start+1);
-    }
 
-    if((length+1)/2 >1){
-cout<<"send right sublist"<<p<<" "<< (length+1)/2<<endl;
+    if((length+1)/2 >1)
 	sortDictionary(p+1, length/2);
-    }
-    
 }
 
 void DumpDictionary(DICT dict, int count[]) {
